@@ -17,6 +17,7 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>cae_microphone_array</depend>  
+  <depend>message_filters</depend>
 
 
   <member_of_group>rosidl_interface_packages</member_of_group>

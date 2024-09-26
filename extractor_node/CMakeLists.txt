@@ -8,6 +8,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cae_microphone_array REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(message_filters REQUIRED)
 
 # generate the messages
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -23,7 +24,7 @@ include_directories(include ${PROJECT_NAME}/include)
 add_executable(extractor src/extractor.cpp)
 
 # link the libraries to the files
-ament_target_dependencies(extractor rclcpp std_msgs sensor_msgs cae_microphone_array)
+ament_target_dependencies(extractor rclcpp std_msgs sensor_msgs cae_microphone_array message_filters)
 
 install(TARGETS
   extractor

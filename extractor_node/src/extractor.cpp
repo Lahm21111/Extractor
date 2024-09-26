@@ -1,8 +1,11 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "message_filters/subscriber.h"
+#include "message_filters/time_synchronizer.h"
 #include "cae_microphone_array/msg/audio_stream.hpp"
 #include "extractor_node/msg/av_reader.hpp"
+#include "message_filters/sync_policies/approximate_time.h"
 #include "sensor_msgs/msg/image.hpp"
 
 class ExtractorNode : public rclcpp::Node
