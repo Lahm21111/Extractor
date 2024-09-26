@@ -38,7 +38,7 @@ private:
   rclcpp::Publisher<extractor_node::msg::AvReader>::SharedPtr av_publisher;
 
   //delcare a vector to store the audio data
-  std::vector<uint8_t> current_mic_data;
+  std::vector<double> current_mic_data;
 
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
   {
@@ -65,8 +65,15 @@ private:
     RCLCPP_INFO(this->get_logger(), "Audio Recieved");
     
     auto data = std::vector<uint8_t>(msg->data.begin(), msg->data.end());
+    std::size_t length = data.size();
+    std::size_t num_doubles = length / sizeof(double);
 
-    current_mic_data = data;
+    // transfer the audio data to a double array
+    std::vector<double> double_data(num_doubles);
+    std::memcpy(double_data.data(), data.data(), length);
+    std::cout << "Vector length: " << num_doubles << std::endl;
+
+    current_mic_data = double_data;
   }
 
 };

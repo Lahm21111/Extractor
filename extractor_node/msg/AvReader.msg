@@ -6,4 +6,4 @@ std_msgs/Header header
 sensor_msgs/Image image
 
 # Matrix (as a 1D array of floats)
-uint8[] audio
+float64[] audio
