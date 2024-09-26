@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>extractor</name>
+  <name>extractor_node</name>
   <version>0.0.1</version>
   <description>A ROS2 package that subscribes to audio and video messages</description>
 
@@ -9,6 +9,8 @@
 
   <!-- Build tool dependencies -->
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
 
   <!-- Run-time dependencies -->
   <depend>rclcpp</depend>
@@ -16,6 +18,8 @@
   <depend>sensor_msgs</depend>
   <depend>cae_microphone_array</depend>  
 
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

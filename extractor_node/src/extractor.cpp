@@ -2,6 +2,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "cae_microphone_array/msg/audio_stream.hpp"
+#include "extractor_node/msg/av_reader.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
 class ExtractorNode : public rclcpp::Node
@@ -21,6 +22,9 @@ public:
     audio_subscription_ = this->create_subscription<cae_microphone_array::msg::AudioStream>(
       "/cae_micarray/audio/array", 10, std::bind(&ExtractorNode::audio_callback, this, std::placeholders::_1));
 
+    // create a publisher for the audio and image data
+    av_publisher =  this->create_publisher<extractor_node::msg::AvReader>("/extractor/av_message", 10);
+
     RCLCPP_INFO(this->get_logger(), "Node initialized, waiting for messages on image_topic and audio_stream_topic.");
   }
 
@@ -30,14 +34,39 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;
   rclcpp::Subscription<cae_microphone_array::msg::AudioStream>::SharedPtr audio_subscription_;
 
+  // delcare the image and audio publisher
+  rclcpp::Publisher<extractor_node::msg::AvReader>::SharedPtr av_publisher;
+
+  //delcare a vector to store the audio data
+  std::vector<uint8_t> current_mic_data;
+
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "Image Recieved");
+
+    // check if the audio data is available
+    if (current_mic_data.empty())
+    {
+      RCLCPP_INFO(this->get_logger(), "No audio data available");
+      return;
+    }
+    else
+    {
+      extractor_node::msg::AvReader av_reader;
+      av_reader.header = msg->header;  
+      av_reader.image = *msg;
+      av_reader.audio= current_mic_data;
+      av_publisher->publish(av_reader);
+    }
   }
 
   void audio_callback(const cae_microphone_array::msg::AudioStream::SharedPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "Audio Recieved");
+    
+    auto data = std::vector<uint8_t>(msg->data.begin(), msg->data.end());
+
+    current_mic_data = data;
   }
 
 };
