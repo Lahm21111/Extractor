@@ -1,8 +1,11 @@
 # Extractor
-Extractor for the audio and video message
+This node subscribes to image and audio data, merging messages with similar timestamps into a new message published on `/extractor/av_message`
 
-# Please use colcon build to build the whole project
-# Or there might be a problem with the dependence
+# Build
+To build the project, use the following command. This avoids potential dependency errors:
 
-run the extractor with ros2 run extractor_node extract
+`colcon build --merge-install --symlink-install --cmake-args "-DCMAKE_BUILD_TYPE=RelWithDebInfo -" -Wall -Wextra -Wpedantic`
+
+# Run
+run the extractor with `ros2 run extractor_node extract`
 
