@@ -54,6 +54,25 @@ private:
   void av_message_callback_(const sensor_msgs::msg::Image::ConstSharedPtr& image, const cae_microphone_array::msg::AudioStream::ConstSharedPtr& audio)
       {
           RCLCPP_INFO(this->get_logger(), "Received synchronized messages");
+
+          // create a message to store the audio and image data
+          extractor_node::msg::AvReader av_reader;
+          av_reader.header = image->header;
+          av_reader.image = *image;
+
+          // we need to handle the audio message before putting in the av_reader
+          auto data = std::vector<uint8_t>(audio->data.begin(), audio->data.end());
+          std::size_t length = data.size();
+          std::size_t num_doubles = length / sizeof(double);
+
+          // transfer the audio data to a double array
+          std::vector<double> double_data(num_doubles);
+          std::memcpy(double_data.data(), data.data(), length);
+          std::cout << "Vector length: " << num_doubles << std::endl;
+
+          av_reader.audio = double_data;
+          av_publisher->publish(av_reader);
+          
       }
 
   // subscribe the message with message filter
