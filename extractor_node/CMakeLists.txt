@@ -21,7 +21,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 include_directories(include ${PROJECT_NAME}/include)
 
 # add the executable files
-add_executable(extractor src/extractor.cpp)
+# add_executable(extractor src/extractor.cpp)
+add_executable(extractor src/extractor_with_time_synchronizer.cpp)
 
 # link the libraries to the files
 ament_target_dependencies(extractor rclcpp std_msgs sensor_msgs cae_microphone_array message_filters)
