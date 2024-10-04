@@ -17,33 +17,21 @@ public:
     rclcpp::QoS image_qos(rclcpp::KeepLast(10));
     image_qos.best_effort();
 
-    // // subscribe to the image topic 
-    //  auto image_subscriber = this->create_subscription<sensor_msgs::msg::Image>(
-    //         "/cae_micarray/images/pict", image_qos,
-    //         [this](const sensor_msgs::msg::Image::SharedPtr msg) {
-    //         });
-
+    // subscribe to the image topic
     image_subscription_ .subscribe(this, "/cae_micarray/images/pict",image_qos.get_rmw_qos_profile());
 
     // subscribe to the audio topic
     audio_subscription_.subscribe(this, "/cae_micarray/audio/array");
 
-
-
     // create a publisher for the audio and image data
     av_publisher =  this->create_publisher<extractor_node::msg::AvReader>("/extractor/av_message", 10);
 
-    // //create a time sychronizer for the audio and image data
-    // typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::msg::Image, cae_microphone_array::msg::AudioStream> MySyncPolicy;
-    // sync_ = std::make_shared<message_filters::TimeSynchronizer<sensor_msgs::msg::Image, cae_microphone_array::msg::AudioStream>>(10);
-    // sync_->connectInput(image_subscription_, audio_subscription_);
 
     // Create a synchronizer using ApproximateTime
     sync_ = std::make_shared<Sync>(10);
     sync_->connectInput(image_subscription_, audio_subscription_);
 
-
-    // 注册同步回调函数
+    // register the callback function for the synchronized messages
     sync_->registerCallback(std::bind(&ExtractorNode::av_message_callback_, this, std::placeholders::_1, std::placeholders::_2));
 
     RCLCPP_INFO(this->get_logger(), "Node initialized, waiting for messages on image_topic and audio_stream_topic.");
@@ -60,7 +48,6 @@ private:
           av_reader.header = image->header;
           av_reader.image = *image;
 
-          // we need to handle the audio message before putting in the av_reader
           auto data = std::vector<uint8_t>(audio->data.begin(), audio->data.end());
           std::size_t length = data.size();
           std::size_t num_doubles = length / sizeof(double);
